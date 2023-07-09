@@ -4,14 +4,16 @@ function novoElemento(tagName, className) {
   return elemento;
 }
 
-function Barreira(reversa = false) {
-  this.elemento = novoElemento("div", "barreira");
-  const borda = novoElemento("div", "borda");
-  const corpo = novoElemento("div", "corpo");
-  this.elemento.appendChild(reversa ? corpo : borda);
-  this.elemento.appendChild(reversa ? borda : corpo);
+class Barreira {
+  constructor(reversa = false) {
+    this.elemento = novoElemento("div", "barreira");
+    const borda = novoElemento("div", "borda");
+    const corpo = novoElemento("div", "corpo");
+    this.elemento.appendChild(reversa ? corpo : borda);
+    this.elemento.appendChild(reversa ? borda : corpo);
 
-  this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
+    this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
+  }
 }
 /* 
 const b= new Barreira(false)
@@ -19,56 +21,59 @@ b.setAltura(300)
 document.querySelector('[wm-flappy]').appendChild(b.elemento) 
  */
 
-function ParDeBarreiras(altura, abertura, popsicaoNaTela) {
-  this.elemento = novoElemento("div", "par-de-barreiras");
-  this.superior = new Barreira(true);
-  this.inferior = new Barreira(false);
+class ParDeBarreiras {
+  constructor(altura, abertura, popsicaoNaTela) {
+    this.elemento = novoElemento("div", "par-de-barreiras");
+    this.superior = new Barreira(true);
+    this.inferior = new Barreira(false);
 
-  this.elemento.appendChild(this.superior.elemento);
-  this.elemento.appendChild(this.inferior.elemento);
+    this.elemento.appendChild(this.superior.elemento);
+    this.elemento.appendChild(this.inferior.elemento);
 
-  this.sortearAbertura = () => {
-    const alturaSuperior = Math.random() * (altura - abertura);
-    const alturaInferior = altura - abertura - alturaSuperior;
-    this.superior.setAltura(alturaSuperior);
-    this.inferior.setAltura(alturaInferior);
-  };
-  this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
-  this.setX = (popsicaoNaTela) =>
-    (this.elemento.style.left = `${popsicaoNaTela}px`);
-  this.getLargura = () => this.elemento.clientWidth;
+    this.sortearAbertura = () => {
+      const alturaSuperior = Math.random() * (altura - abertura);
+      const alturaInferior = altura - abertura - alturaSuperior;
+      this.superior.setAltura(alturaSuperior);
+      this.inferior.setAltura(alturaInferior);
+    };
+    this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
+    this.setX = (popsicaoNaTela) => (this.elemento.style.left = `${popsicaoNaTela}px`);
+    this.getLargura = () => this.elemento.clientWidth;
 
-  this.sortearAbertura();
-  this.setX(popsicaoNaTela);
+    this.sortearAbertura();
+    this.setX(popsicaoNaTela);
+  }
 }
 
 /* const b= new ParDeBarreiras(550,250,500)
 document.querySelector('[wm-flappy]').appendChild(b.elemento)  
  */
-function Barreiras(altura, largura, abertura, espaco, notificarPonto) {
-  this.pares = [
-    new ParDeBarreiras(altura, abertura, largura),
-    new ParDeBarreiras(altura, abertura, largura + espaco),
-    new ParDeBarreiras(altura, abertura, largura + espaco * 2),
-    new ParDeBarreiras(altura, abertura, largura + espaco * 3),
-  ];
+class Barreiras {
+  constructor(altura, largura, abertura, espaco, notificarPonto) {
+    this.pares = [
+      new ParDeBarreiras(altura, abertura, largura),
+      new ParDeBarreiras(altura, abertura, largura + espaco),
+      new ParDeBarreiras(altura, abertura, largura + espaco * 2),
+      new ParDeBarreiras(altura, abertura, largura + espaco * 3),
+    ];
 
-  const deslocamento = 3;
-  this.animar = () => {
-    this.pares.forEach((par) => {
-      par.setX(par.getX() - deslocamento);
+    const deslocamento = 3;
+    this.animar = () => {
+      this.pares.forEach((par) => {
+        par.setX(par.getX() - deslocamento);
 
-      if (par.getX() < -par.getLargura()) {
-        par.setX(par.getX() + espaco * this.pares.length);
-        par.sortearAbertura();
-      }
-      const meio = largura / 2;
-      const cruzouMeio = par.getX() + deslocamento >= meio && par.getX() < meio;
-      if (cruzouMeio) {
-        notificarPonto();
-      }
-    });
-  };
+        if (par.getX() < -par.getLargura()) {
+          par.setX(par.getX() + espaco * this.pares.length);
+          par.sortearAbertura();
+        }
+        const meio = largura / 2;
+        const cruzouMeio = par.getX() + deslocamento >= meio && par.getX() < meio;
+        if (cruzouMeio) {
+          notificarPonto();
+        }
+      });
+    };
+  }
 }
 
 /* const barreiras = new Barreiras(500, 300, 100, 400)
@@ -107,21 +112,23 @@ setInterval(() => {
 //     this.setY(alturaJogo / 2)
 // }
 
-function Passaro(alturaJogo) {
-  this.elemento = novoElemento("img", "passaro");
-  this.elemento.src = "img/passaro.png";
+class Passaro {
+  constructor(alturaJogo) {
+    this.elemento = novoElemento("img", "passaro");
+    this.elemento.src = "img/passaro.png";
 
-  this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
-  this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
+    this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
+    this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
 
-  window.onkeydown = (e) => {
-    if (e.keyCode == "37") {
-      this.setY(this.getY() + 15);
-    } else if (e.keyCode == "39") {
-      this.setY(this.getY() - 15);
-    }
-  };
-  this.setY(alturaJogo / 2);
+    window.onkeydown = (e) => {
+      if (e.keyCode == "37") {
+        this.setY(this.getY() + 15);
+      } else if (e.keyCode == "39") {
+        this.setY(this.getY() - 15);
+      }
+    };
+    this.setY(alturaJogo / 2);
+  }
 }
 /* const barreiras = new Barreiras(700, 400, 200, 400)
 const passaro = new Passaro(700)
@@ -136,12 +143,14 @@ setInterval(() => {
       passaro.animar() 
 },20) */
 
-function Progresso() {
-  this.elemento = novoElemento("span", "progresso");
-  this.atualizarPontos = (pontos) => {
-    this.elemento.innerHTML = pontos;
-  };
-  this.atualizarPontos(0);
+class Progresso {
+  constructor() {
+    this.elemento = novoElemento("span", "progresso");
+    this.atualizarPontos = (pontos) => {
+      this.elemento.innerHTML = pontos;
+    };
+    this.atualizarPontos(0);
+  }
 }
 
 /*  const barreiras = new Barreiras(700, 400, 200, 400)
@@ -177,36 +186,38 @@ function colidiu(carro, barreiras) {
   return colidiu;
 }
 
-function FlappyBird() {
-  let pontos = 0;
-  const areaDoJogo = document.querySelector("[wm-flappy]");
-  const altura = areaDoJogo.clientHeight;
-  const largura = areaDoJogo.clientWidth;
+class FlappyBird {
+  constructor() {
+    let pontos = 0;
+    const areaDoJogo = document.querySelector("[wm-flappy]");
+    const altura = areaDoJogo.clientHeight;
+    const largura = areaDoJogo.clientWidth;
 
-  const progresso = new Progresso();
-  const barreiras = new Barreiras(
-    altura,
-    largura,
-    200,
-    400,
-    () => progresso.atualizarPontos(++pontos),
-    () => progresso.atualizarPontos(--pontos)
-  );
+    const progresso = new Progresso();
+    const barreiras = new Barreiras(
+      altura,
+      largura,
+      200,
+      400,
+      () => progresso.atualizarPontos(++pontos),
+      () => progresso.atualizarPontos(--pontos)
+    );
 
-  const passaro = new Passaro(altura);
+    const passaro = new Passaro(altura);
 
-  areaDoJogo.appendChild(progresso.elemento);
-  areaDoJogo.appendChild(passaro.elemento);
-  barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
+    areaDoJogo.appendChild(progresso.elemento);
+    areaDoJogo.appendChild(passaro.elemento);
+    barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
 
-  this.start = () => {
-    const temporizador = setInterval(() => {
-      barreiras.animar();
+    this.start = () => {
+      const temporizador = setInterval(() => {
+        barreiras.animar();
 
-      if (colidiu(passaro, barreiras)) {
-        clearInterval(temporizador);
-      }
-    }, 20);
-  };
+        if (colidiu(passaro, barreiras)) {
+          clearInterval(temporizador);
+        }
+      }, 20);
+    };
+  }
 }
 new FlappyBird().start();
