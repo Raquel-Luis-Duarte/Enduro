@@ -17,7 +17,7 @@ class Barreira {
 }
 
 class ParDeBarreiras {
-  constructor(altura, abertura, popsicaoNaTela) {
+  constructor(altura, abertura, posicaoNaTela) {
     this.elemento = novoElemento("div", "par-de-barreiras");
     this.superior = new Barreira(true);
     this.inferior = new Barreira(false);
@@ -37,7 +37,7 @@ class ParDeBarreiras {
     this.getLargura = () => this.elemento.clientWidth;
 
     this.sortearAbertura();
-    this.setX(popsicaoNaTela);
+    this.setX(posicaoNaTela);
   }
 }
 
