@@ -81,7 +81,7 @@ class Barreiras {
 class Passaro {
   constructor(alturaJogo) {
     this.elemento = novoElemento("img", "passaro");
-    this.elemento.src = "img/passaro.png";
+    this.elemento.src = "img/carro.png";
 
     this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
     this.setY = (y) => (this.elemento.style.bottom = `${y}px`);

@@ -43,14 +43,11 @@ body {
   transform: rotate(270deg);
 }
 
-.container {
-
-}
-
 .passaro {
   position: absolute;
   width: 60px;
   left: calc(50% - 30px);
+  transform: rotate(90deg);
 }
 
 .par-de-barreiras {
