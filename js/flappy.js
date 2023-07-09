@@ -15,11 +15,6 @@ class Barreira {
     this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
   }
 }
-/* 
-const b= new Barreira(false)
-b.setAltura(300)
-document.querySelector('[wm-flappy]').appendChild(b.elemento) 
- */
 
 class ParDeBarreiras {
   constructor(altura, abertura, popsicaoNaTela) {
@@ -45,9 +40,6 @@ class ParDeBarreiras {
   }
 }
 
-/* const b= new ParDeBarreiras(550,250,500)
-document.querySelector('[wm-flappy]').appendChild(b.elemento)  
- */
 class Barreiras {
   constructor(altura, largura, abertura, espaco, notificarPonto) {
     this.pares = [
@@ -76,42 +68,6 @@ class Barreiras {
   }
 }
 
-/* const barreiras = new Barreiras(500, 300, 100, 400)
-const areaDoJogo = document.querySelector('[wm-flappy]')
-
-barreiras.pares.forEach( par => areaDoJogo.appendChild(par.elemento)) 
-
-setInterval(() => {
-    barreiras.animar()
-},50)  */
-
-// function Passaro(alturaJogo) {
-//     let voando = false
-
-//     this.elemento = novoElemento('img', 'passaro')
-//     this.elemento.src = 'img/passaro.png'
-
-//     this.getY = () => parseInt(this.elemento.style.bottom.split('px')[0])
-//     this.setY = y => this.elemento.style.bottom = `${y}px`
-
-//     window.onkeydown = e => voando = true
-//     window.onkeyup = e => voando = false
-
-//     this.animar = () => {
-//         const novoY = this.getY() + (voando ? 8 : -5)
-//         const alturaMaxima = alturaJogo - this.elemento.clientWidth
-
-//         if (novoY <= 0) {
-//             this.setY(0)
-//         } else if (novoY >= alturaMaxima) {
-//             this.setY(alturaMaxima)
-//         } else {
-//             this.setY(novoY)
-//         }
-//     }
-//     this.setY(alturaJogo / 2)
-// }
-
 class Passaro {
   constructor(alturaJogo) {
     this.elemento = novoElemento("img", "passaro");
@@ -130,18 +86,6 @@ class Passaro {
     this.setY(alturaJogo / 2);
   }
 }
-/* const barreiras = new Barreiras(700, 400, 200, 400)
-const passaro = new Passaro(700)
-
-const areaDoJogo = document.querySelector('[wm-flappy]')
-
-areaDoJogo.appendChild(passaro.elemento)
-barreiras.pares.forEach( par => areaDoJogo.appendChild(par.elemento)) 
-
-setInterval(() => {
-      barreiras.animar()
-      passaro.animar() 
-},20) */
 
 class Progresso {
   constructor() {
@@ -152,14 +96,6 @@ class Progresso {
     this.atualizarPontos(0);
   }
 }
-
-/*  const barreiras = new Barreiras(700, 400, 200, 400)
-const passaro = new Passaro(700)
-
-const areaDoJogo = document.querySelector('[wm-flappy]')
-
-areaDoJogo.appendChild(passaro.elemento)
-barreiras.pares.forEach( par => areaDoJogo.appendChild(par.elemento))  */
 
 function estaoSobrepostos(elementoA, elementoB) {
   const a = elementoA.getBoundingClientRect();
