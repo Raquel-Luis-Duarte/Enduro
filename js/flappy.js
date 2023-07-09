@@ -52,10 +52,10 @@ class Barreiras {
 
     this.colidiu = false;
 
-    const deslocamento = 3;
+    this.velociadadeDoJogo = 3;
     this.animar = () => {
       this.pares.forEach((par) => {
-        par.setX(par.getX() - deslocamento);
+        par.setX(par.getX() - this.velociadadeDoJogo);
 
         if (par.getX() < -par.getLargura()) {
           par.setX(par.getX() + espaco * this.pares.length);
@@ -63,8 +63,8 @@ class Barreiras {
         }
         const meio = largura / 2;
         const cruzouMeio =
-          par.getX() + deslocamento >= meio && par.getX() < meio;
-          
+          par.getX() + this.velociadadeDoJogo >= meio && par.getX() < meio;
+
         if (cruzouMeio && !this.colidiu) {
           ganharPonto();
         } else if (cruzouMeio && this.colidiu) {
@@ -74,9 +74,21 @@ class Barreiras {
     };
   }
 
+  getVelocidade = () => this.velociadadeDoJogo;
+  setVelocidade = (novaVelocidade) => (this.velociadadeDoJogo = novaVelocidade);
+
   getColidiu = () => this.colidiu;
   setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
 }
+
+const minBotton = -37;
+const maxBotton = 608;
+
+const foraPistaBotton = 38;
+const foraPistaTop = 518;
+
+const maxSpeed = 7;
+const minSpedd = 0;
 
 class Passaro {
   constructor(alturaJogo) {
@@ -88,9 +100,11 @@ class Passaro {
 
     window.onkeydown = (e) => {
       if (e.keyCode == "37") {
-        this.setY(this.getY() + 15);
+        if(this.getY() + 15 <= maxBotton) this.setY(this.getY() + 15);
+        else this.setY(maxBotton)
       } else if (e.keyCode == "39") {
-        this.setY(this.getY() - 15);
+        if(this.getY() - 15 >= minBotton) this.setY(this.getY() - 15);
+        else this.setY(minBotton)
       }
     };
     this.setY(alturaJogo / 2);
