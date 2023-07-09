@@ -85,10 +85,10 @@ class Barreiras {
 }
 
 const minBotton = -37;
-const maxBotton = 608;
+const maxBotton = 690;
 
-const foraPistaBotton = 38;
-const foraPistaTop = 518;
+const pistaBotton = 38;
+const pistaTop = 518;
 
 const velocidadeMaximaDoCarro = 300;
 const velocidadeMinimaDoCarro = 5;
@@ -194,15 +194,28 @@ class FlappyBird {
       }, 20);
 
       const aceleracao = setInterval(() => {
-        if (barreiras.getVelocidade() < velocidadeMaximaDoJogo)
-          barreiras.setVelocidade(barreiras.getVelocidade() + 1);
+        if (
+          carro.getPosicaoCarro() >= pistaBotton &&
+          carro.getPosicaoCarro() <= pistaTop
+        ) {
+          if (barreiras.getVelocidade() < velocidadeMaximaDoJogo)
+            barreiras.setVelocidade(barreiras.getVelocidade() + 1);
 
-        if (carro.getVelocidadeCarro() < velocidadeMaximaDoCarro)
-          carro.setVelocidadeCarro(carro.getVelocidadeCarro() + 50);
+          if (carro.getVelocidadeCarro() < velocidadeMaximaDoCarro)
+            carro.setVelocidadeCarro(carro.getVelocidadeCarro() + 50);
+        } else {
+          if (barreiras.getVelocidade() > velocidadeMinimaDoJogo) {
+            if (barreiras.getVelocidade() - 2 >= velocidadeMinimaDoJogo)
+              barreiras.setVelocidade(barreiras.getVelocidade() - 2);
+            else barreiras.setVelocidade(velocidadeMinimaDoJogo);
+          }
 
-        console.log(
-          `velocidade do Jogo: ${barreiras.getVelocidade()} velocidade do Carro: ${carro.getVelocidadeCarro()}`
-        );
+          if (carro.getVelocidadeCarro() < velocidadeMinimaDoCarro) {
+            if (carro.getVelocidadeCarro() - 70 >= velocidadeMinimaDoCarro)
+              carro.setVelocidadeCarro(carro.getVelocidadeCarro() - 70);
+            else carro.setVelocidadeCarro(velocidadeMinimaDoCarro);
+          }
+        }
       }, 2000);
     };
   }
