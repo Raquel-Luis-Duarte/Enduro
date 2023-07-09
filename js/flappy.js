@@ -108,17 +108,11 @@ setInterval(() => {
 // }
 
 function Passaro(alturaJogo) {
-  let voando = false;
-  let velocidade = 0; // Velocidade de movimento vertical do pássaro
-
   this.elemento = novoElemento("img", "passaro");
   this.elemento.src = "img/passaro.png";
 
   this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
   this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
-
-  window.onkeydown = (e) => (voando = true);
-  window.onkeyup = (e) => (voando = false);
 
   window.onkeydown = (e) => {
     if (e.keyCode == "37") {
@@ -165,7 +159,6 @@ function estaoSobrepostos(elementoA, elementoB) {
   const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top;
 
   const retorno = horizontal && vertical;
-  console.log(retorno);
   return retorno;
 }
 
