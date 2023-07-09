@@ -41,6 +41,9 @@ class ParDeBarreiras {
   }
 }
 
+const velocidadeMaximaDoJogo = 10;
+const velocidadeMinimaDoJogo = 0;
+
 class Barreiras {
   constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
     this.pares = [
@@ -87,31 +90,40 @@ const maxBotton = 608;
 const foraPistaBotton = 38;
 const foraPistaTop = 518;
 
-const maxSpeed = 7;
-const minSpedd = 0;
+const velocidadeMaximaDoCarro = 300;
+const velocidadeMinimaDoCarro = 5;
 
 class Carro {
   constructor(alturaJogo) {
     this.elemento = novoElemento("img", "passaro");
     this.elemento.src = "img/carro.png";
 
-    this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
-    this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
-
     window.onkeydown = (e) => {
       if (e.keyCode == "37") {
-        if(this.getY() + 15 <= maxBotton) this.setY(this.getY() + 15);
-        else this.setY(maxBotton)
+        if (this.getPosicaoCarro() + 15 <= maxBotton)
+          this.setPosicaoCarro(this.getPosicaoCarro() + 15);
+        else this.setPosicaoCarro(maxBotton);
       } else if (e.keyCode == "39") {
-        if(this.getY() - 15 >= minBotton) this.setY(this.getY() - 15);
-        else this.setY(minBotton)
+        if (this.getPosicaoCarro() - 15 >= minBotton)
+          this.setPosicaoCarro(this.getPosicaoCarro() - 15);
+        else this.setPosicaoCarro(minBotton);
       }
     };
 
     this.velocidadeDoCarro = 15;
 
-    this.setY(alturaJogo / 2);
+    this.setPosicaoCarro(alturaJogo / 2);
   }
+
+  getPosicaoCarro = () => parseInt(this.elemento.style.bottom.split("px")[0]);
+  setPosicaoCarro = (novaPosicao) => {
+    this.elemento.style.bottom = `${novaPosicao}px`;
+  };
+
+  getVelocidadeCarro = () => this.velocidadeDoCarro;
+  setVelocidadeCarro = (novaVelocidade) => {
+    this.velocidadeDoCarro = novaVelocidade;
+  };
 }
 
 class Progresso {
@@ -165,7 +177,7 @@ class FlappyBird {
     const barreiras = new Barreiras(
       altura,
       largura,
-      200,
+      275,
       400,
       ganharPonto,
       perderPonto
@@ -176,10 +188,22 @@ class FlappyBird {
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
 
     this.start = () => {
-      const temporizador = setInterval(() => {
+      const jogo = setInterval(() => {
         barreiras.animar();
         barreiras.setColidiu(colidiu(carro, barreiras));
       }, 20);
+
+      const aceleracao = setInterval(() => {
+        if (barreiras.getVelocidade() < velocidadeMaximaDoJogo)
+          barreiras.setVelocidade(barreiras.getVelocidade() + 1);
+
+        if (carro.getVelocidadeCarro() < velocidadeMaximaDoCarro)
+          carro.setVelocidadeCarro(carro.getVelocidadeCarro() + 50);
+
+        console.log(
+          `velocidade do Jogo: ${barreiras.getVelocidade()} velocidade do Carro: ${carro.getVelocidadeCarro()}`
+        );
+      }, 2000);
     };
   }
 }
