@@ -32,7 +32,8 @@ class ParDeBarreiras {
       this.inferior.setAltura(alturaInferior);
     };
     this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
-    this.setX = (popsicaoNaTela) => (this.elemento.style.left = `${popsicaoNaTela}px`);
+    this.setX = (popsicaoNaTela) =>
+      (this.elemento.style.left = `${popsicaoNaTela}px`);
     this.getLargura = () => this.elemento.clientWidth;
 
     this.sortearAbertura();
@@ -41,7 +42,7 @@ class ParDeBarreiras {
 }
 
 class Barreiras {
-  constructor(altura, largura, abertura, espaco, notificarPonto) {
+  constructor(altura, largura, abertura, espaco, ganharPonto) {
     this.pares = [
       new ParDeBarreiras(altura, abertura, largura),
       new ParDeBarreiras(altura, abertura, largura + espaco),
@@ -59,9 +60,10 @@ class Barreiras {
           par.sortearAbertura();
         }
         const meio = largura / 2;
-        const cruzouMeio = par.getX() + deslocamento >= meio && par.getX() < meio;
+        const cruzouMeio =
+          par.getX() + deslocamento >= meio && par.getX() < meio;
         if (cruzouMeio) {
-          notificarPonto();
+          ganharPonto();
         }
       });
     };
@@ -130,14 +132,10 @@ class FlappyBird {
     const largura = areaDoJogo.clientWidth;
 
     const progresso = new Progresso();
-    const barreiras = new Barreiras(
-      altura,
-      largura,
-      200,
-      400,
-      () => progresso.atualizarPontos(++pontos),
-      () => progresso.atualizarPontos(--pontos)
-    );
+    const ganharPonto = () => progresso.atualizarPontos(++pontos);
+    const perderPonto = () => progresso.atualizarPontos(--pontos);
+
+    const barreiras = new Barreiras(altura, largura, 200, 400, ganharPonto);
 
     const passaro = new Passaro(altura);
 
