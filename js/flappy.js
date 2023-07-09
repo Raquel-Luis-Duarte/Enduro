@@ -64,6 +64,7 @@ class Barreiras {
         const meio = largura / 2;
         const cruzouMeio =
           par.getX() + deslocamento >= meio && par.getX() < meio;
+          
         if (cruzouMeio && !this.colidiu) {
           ganharPonto();
         } else if (cruzouMeio && this.colidiu) {
