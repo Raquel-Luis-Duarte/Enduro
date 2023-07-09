@@ -42,13 +42,15 @@ class ParDeBarreiras {
 }
 
 class Barreiras {
-  constructor(altura, largura, abertura, espaco, ganharPonto) {
+  constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
     this.pares = [
       new ParDeBarreiras(altura, abertura, largura),
       new ParDeBarreiras(altura, abertura, largura + espaco),
       new ParDeBarreiras(altura, abertura, largura + espaco * 2),
       new ParDeBarreiras(altura, abertura, largura + espaco * 3),
     ];
+
+    this.colidiu = false;
 
     const deslocamento = 3;
     this.animar = () => {
@@ -62,12 +64,17 @@ class Barreiras {
         const meio = largura / 2;
         const cruzouMeio =
           par.getX() + deslocamento >= meio && par.getX() < meio;
-        if (cruzouMeio) {
+        if (cruzouMeio && !this.colidiu) {
           ganharPonto();
+        } else if (cruzouMeio && this.colidiu) {
+          perderPonto();
         }
       });
     };
   }
+
+  getColidiu = () => this.colidiu;
+  setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
 }
 
 class Passaro {
@@ -135,9 +142,16 @@ class FlappyBird {
     const ganharPonto = () => progresso.atualizarPontos(++pontos);
     const perderPonto = () => progresso.atualizarPontos(--pontos);
 
-    const barreiras = new Barreiras(altura, largura, 200, 400, ganharPonto);
-
     const passaro = new Passaro(altura);
+
+    const barreiras = new Barreiras(
+      altura,
+      largura,
+      200,
+      400,
+      ganharPonto,
+      perderPonto
+    );
 
     areaDoJogo.appendChild(progresso.elemento);
     areaDoJogo.appendChild(passaro.elemento);
@@ -146,10 +160,7 @@ class FlappyBird {
     this.start = () => {
       const temporizador = setInterval(() => {
         barreiras.animar();
-
-        if (colidiu(passaro, barreiras)) {
-          clearInterval(temporizador);
-        }
+        barreiras.setColidiu(colidiu(passaro, barreiras));
       }, 20);
     };
   }
