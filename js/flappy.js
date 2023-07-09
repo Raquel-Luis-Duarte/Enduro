@@ -52,10 +52,10 @@ class Barreiras {
 
     this.colidiu = false;
 
-    this.velociadadeDoJogo = 3;
+    this.velocidadeDoJogo = 3;
     this.animar = () => {
       this.pares.forEach((par) => {
-        par.setX(par.getX() - this.velociadadeDoJogo);
+        par.setX(par.getX() - this.velocidadeDoJogo);
 
         if (par.getX() < -par.getLargura()) {
           par.setX(par.getX() + espaco * this.pares.length);
@@ -63,7 +63,7 @@ class Barreiras {
         }
         const meio = largura / 2;
         const cruzouMeio =
-          par.getX() + this.velociadadeDoJogo >= meio && par.getX() < meio;
+          par.getX() + this.velocidadeDoJogo >= meio && par.getX() < meio;
 
         if (cruzouMeio && !this.colidiu) {
           ganharPonto();
@@ -74,8 +74,8 @@ class Barreiras {
     };
   }
 
-  getVelocidade = () => this.velociadadeDoJogo;
-  setVelocidade = (novaVelocidade) => (this.velociadadeDoJogo = novaVelocidade);
+  getVelocidade = () => this.velocidadeDoJogo;
+  setVelocidade = (novaVelocidade) => (this.velocidadeDoJogo = novaVelocidade);
 
   getColidiu = () => this.colidiu;
   setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
@@ -90,7 +90,7 @@ const foraPistaTop = 518;
 const maxSpeed = 7;
 const minSpedd = 0;
 
-class Passaro {
+class Carro {
   constructor(alturaJogo) {
     this.elemento = novoElemento("img", "passaro");
     this.elemento.src = "img/carro.png";
@@ -107,6 +107,9 @@ class Passaro {
         else this.setY(minBotton)
       }
     };
+
+    this.velocidadeDoCarro = 15;
+
     this.setY(alturaJogo / 2);
   }
 }
@@ -157,7 +160,7 @@ class FlappyBird {
     const ganharPonto = () => progresso.atualizarPontos(++pontos);
     const perderPonto = () => progresso.atualizarPontos(--pontos);
 
-    const passaro = new Passaro(altura);
+    const carro = new Carro(altura);
 
     const barreiras = new Barreiras(
       altura,
@@ -169,13 +172,13 @@ class FlappyBird {
     );
 
     areaDoJogo.appendChild(progresso.elemento);
-    areaDoJogo.appendChild(passaro.elemento);
+    areaDoJogo.appendChild(carro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
 
     this.start = () => {
       const temporizador = setInterval(() => {
         barreiras.animar();
-        barreiras.setColidiu(colidiu(passaro, barreiras));
+        barreiras.setColidiu(colidiu(carro, barreiras));
       }, 20);
     };
   }
