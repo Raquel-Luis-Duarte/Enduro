@@ -121,28 +121,12 @@ function Passaro(alturaJogo) {
   window.onkeyup = (e) => (voando = false);
 
   window.onkeydown = (e) => {
-    if(e.keyCode == "37"){
-        this.setY(this.getY() + 15)
-    } else if(e.keyCode == "39"){
-        this.setY(this.getY() - 15)
+    if (e.keyCode == "37") {
+      this.setY(this.getY() + 15);
+    } else if (e.keyCode == "39") {
+      this.setY(this.getY() - 15);
     }
-  }
-
-//   this.animar = () => {
-//     const deslocamento = voando ? velocidade : -velocidade; // Ajuste de velocidade
-//     const novoY = this.getY() + deslocamento;
-//     const alturaMaxima = alturaJogo - this.elemento.clientHeight;
-
-   
-
-//     if (novoY <= 0) {
-//       this.setY(0);
-//     } else if (novoY >= alturaMaxima) {
-//       this.setY(alturaMaxima);
-//     } else {
-//       this.setY(novoY);
-//     }
-//   };
+  };
   this.setY(alturaJogo / 2);
 }
 /* const barreiras = new Barreiras(700, 400, 200, 400)
@@ -180,22 +164,10 @@ function estaoSobrepostos(elementoA, elementoB) {
   const horizontal = a.left + a.width >= b.left && b.left + b.width >= a.left;
   const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top;
 
-  return horizontal && vertical;
+  const retorno = horizontal && vertical;
+  console.log(retorno);
+  return retorno;
 }
-
-// function colidiu(passaro, barreiras) {
-//   let colidiu = false;
-
-//   barreiras.pares.forEach((parDeBarreiras) => {
-//     if (!colidiu) {
-//       const superior = parDeBarreiras.superior.elemento;
-//       const inferior = parDeBarreiras.inferior.elemento;
-//       colidiu =
-//         estaoSobrepostos(passaro.elemento, superior) ||
-//         estaoSobrepostos(passaro.elemento, inferior);
-//     }
-//   });
-//   return colidiu;
 
 function colidiu(carro, barreiras) {
   let colidiu = false;
@@ -219,8 +191,13 @@ function FlappyBird() {
   const largura = areaDoJogo.clientWidth;
 
   const progresso = new Progresso();
-  const barreiras = new Barreiras(altura, largura, 200, 400, () =>
-    progresso.atualizarPontos(++pontos)
+  const barreiras = new Barreiras(
+    altura,
+    largura,
+    200,
+    400,
+    () => progresso.atualizarPontos(++pontos),
+    () => progresso.atualizarPontos(--pontos)
   );
 
   const passaro = new Passaro(altura);
@@ -232,7 +209,6 @@ function FlappyBird() {
   this.start = () => {
     const temporizador = setInterval(() => {
       barreiras.animar();
-      passaro.animar();
 
       if (colidiu(passaro, barreiras)) {
         clearInterval(temporizador);
