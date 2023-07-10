@@ -4,6 +4,19 @@ function novoElemento(tagName, className) {
   return elemento;
 }
 
+
+class Obstaculos {
+  constructor(reversa = false) {
+    this.elemento = novoElemento("div", "obstaculos");
+    const inimigo1 = novoElemento("div", "inimigo1");
+    const inimigo2 = novoElemento("div", "inimigo2");
+
+    this.elemento.appendChild(reversa ? inimigo1:inimigo2);
+ 
+
+    this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
+  }
+}
 class Barreira {
   constructor(reversa = false) {
     this.elemento = novoElemento("div", "barreira");
