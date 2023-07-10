@@ -26,7 +26,7 @@ class ParDeBarreiras {
     this.elemento.appendChild(this.inferior.elemento);
 
     this.sortearAbertura = () => {
-      const alturaSuperior = Math.random() * (altura - abertura);
+      const alturaSuperior = (0.5) * (altura - abertura);
       const alturaInferior = altura - abertura - alturaSuperior;
       this.superior.setAltura(alturaSuperior);
       this.inferior.setAltura(alturaInferior);
