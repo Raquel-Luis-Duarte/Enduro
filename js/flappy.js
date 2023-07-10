@@ -5,9 +5,9 @@ function novoElemento(tagName, className) {
 }
 
 
-class Obstaculos {
+class Obstaculo {
   constructor(reversa = false) {
-    this.elemento = novoElemento("div", "obstaculos");
+    this.elemento = novoElemento("div", "obstaculo");
     const inimigo1 = novoElemento("div", "inimigo1");
     const inimigo2 = novoElemento("div", "inimigo2");
 
@@ -26,6 +26,31 @@ class Barreira {
     this.elemento.appendChild(reversa ? borda : corpo);
 
     this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
+  }
+}
+
+class ConjObstaculos {
+  constructor(altura, abertura, posicaoNaTela) {
+    this.elemento = novoElemento("div", "obstaculosConj");
+    this.superior = new Barreira(true);
+    this.inferior = new Barreira(false);
+
+    this.elemento.appendChild(this.superior.elemento);
+    this.elemento.appendChild(this.inferior.elemento);
+
+    this.sortearAbertura = () => {
+      const alturaSuperior = Math.random() * (altura - abertura);
+      const alturaInferior = altura - abertura - alturaSuperior;
+      this.superior.setAltura(alturaSuperior);
+      this.inferior.setAltura(alturaInferior);
+    };
+    this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
+    this.setX = (popsicaoNaTela) =>
+      (this.elemento.style.left = `${popsicaoNaTela}px`);
+    this.getLargura = () => this.elemento.clientWidth;
+
+    this.sortearAbertura();
+    this.setX(posicaoNaTela);
   }
 }
 
@@ -53,6 +78,44 @@ class ParDeBarreiras {
     this.setX(posicaoNaTela);
   }
 }
+
+class Barreiras {
+  constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
+    this.pares = [
+      new ParDeBarreiras(altura, abertura, largura),
+      new ParDeBarreiras(altura, abertura, largura + espaco),
+      new ParDeBarreiras(altura, abertura, largura + espaco * 2),
+      new ParDeBarreiras(altura, abertura, largura + espaco * 3),
+    ];
+
+    this.colidiu = false;
+
+    const deslocamento = 3;
+    this.animar = () => {
+      this.pares.forEach((par) => {
+        par.setX(par.getX() - deslocamento);
+
+        if (par.getX() < -par.getLargura()) {
+          par.setX(par.getX() + espaco * this.pares.length);
+          par.sortearAbertura();
+        }
+        const meio = largura / 2;
+        const cruzouMeio =
+          par.getX() + deslocamento >= meio && par.getX() < meio;
+          
+        if (cruzouMeio && !this.colidiu) {
+          ganharPonto();
+        } else if (cruzouMeio && this.colidiu) {
+          perderPonto();
+        }
+      });
+    };
+  }
+
+  getColidiu = () => this.colidiu;
+  setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
+}
+
 
 class Barreiras {
   constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
@@ -162,7 +225,7 @@ class FlappyBird {
       altura,
       largura,
       405,
-      175,
+      200,
       ganharPonto,
       perderPonto
     );
