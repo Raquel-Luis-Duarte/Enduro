@@ -39,9 +39,10 @@ class ParDeBarreiras {
 
     this.sortearAbertura = () => {
       const alturaSuperior = (0.5) * (altura - abertura);
-      const alturaInferior = altura - abertura - alturaSuperior;
-      this.superior.setAltura(alturaSuperior);
-      this.inferior.setAltura(alturaInferior);
+      // const alturaSuperior = (0.5) * (altura - abertura);
+      // const alturaInferior = altura - abertura - alturaSuperior;
+      // this.superior.setAltura(alturaSuperior);
+      // this.inferior.setAltura(alturaInferior);
     };
     this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
     this.setX = (popsicaoNaTela) =>
@@ -77,6 +78,9 @@ class ConjDeObtaculos {
     this.setX(posicaoNaTela);
   }
 }
+
+const velocidadeMaximaDoJogo = 10;
+const velocidadeMinimaDoJogo = 0;
 
 class Obstaculos {
   constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
@@ -126,10 +130,10 @@ class Barreiras {
 
     this.colidiu = false;
 
-    const deslocamento = 3;
+    this.velocidadeDoJogo = 3;
     this.animar = () => {
       this.pares.forEach((par) => {
-        par.setX(par.getX() - deslocamento);
+        par.setX(par.getX() - this.velocidadeDoJogo);
 
         if (par.getX() < -par.getLargura()) {
           par.setX(par.getX() + espaco * this.pares.length);
@@ -137,8 +141,8 @@ class Barreiras {
         }
         const meio = largura / 2;
         const cruzouMeio =
-          par.getX() + deslocamento >= meio && par.getX() < meio;
-          
+          par.getX() + this.velocidadeDoJogo >= meio && par.getX() < meio;
+
         if (cruzouMeio && !this.colidiu) {
           ganharPonto();
         } else if (cruzouMeio && this.colidiu) {
@@ -148,27 +152,53 @@ class Barreiras {
     };
   }
 
+  getVelocidade = () => this.velocidadeDoJogo;
+  setVelocidade = (novaVelocidade) => (this.velocidadeDoJogo = novaVelocidade);
+
   getColidiu = () => this.colidiu;
   setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
 }
 
-class Passaro {
+const minBotton = -37;
+const maxBotton = 690;
+
+const pistaBotton = 38;
+const pistaTop = 518;
+
+const velocidadeMaximaDoCarro = 300;
+const velocidadeMinimaDoCarro = 5;
+
+class Carro {
   constructor(alturaJogo) {
     this.elemento = novoElemento("img", "passaro");
     this.elemento.src = "img/carro.png";
 
-    this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
-    this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
-
     window.onkeydown = (e) => {
       if (e.keyCode == "37") {
-        this.setY(this.getY() + 15);
+        if (this.getPosicaoCarro() + 15 <= maxBotton)
+          this.setPosicaoCarro(this.getPosicaoCarro() + 15);
+        else this.setPosicaoCarro(maxBotton);
       } else if (e.keyCode == "39") {
-        this.setY(this.getY() - 15);
+        if (this.getPosicaoCarro() - 15 >= minBotton)
+          this.setPosicaoCarro(this.getPosicaoCarro() - 15);
+        else this.setPosicaoCarro(minBotton);
       }
     };
-    this.setY(alturaJogo / 2);
+
+    this.velocidadeDoCarro = 15;
+
+    this.setPosicaoCarro(alturaJogo / 2);
   }
+
+  getPosicaoCarro = () => parseInt(this.elemento.style.bottom.split("px")[0]);
+  setPosicaoCarro = (novaPosicao) => {
+    this.elemento.style.bottom = `${novaPosicao}px`;
+  };
+
+  getVelocidadeCarro = () => this.velocidadeDoCarro;
+  setVelocidadeCarro = (novaVelocidade) => {
+    this.velocidadeDoCarro = novaVelocidade;
+  };
 }
 
 class Progresso {
@@ -232,7 +262,7 @@ class FlappyBird {
     const ganharPonto = () => progresso.atualizarPontos(++pontos);
     const perderPonto = () => progresso.atualizarPontos(--pontos);
 
-    const passaro = new Passaro(altura);
+    const carro = new Carro(altura);
 
     const obstaculos = new Obstaculos(
       altura,
@@ -253,16 +283,41 @@ class FlappyBird {
     );
 
     areaDoJogo.appendChild(progresso.elemento);
-    areaDoJogo.appendChild(passaro.elemento);
+    areaDoJogo.appendChild(carro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
     obstaculos.pares.forEach((par) => areaDoJogo.appendChild(par.elemento))
     this.start = () => {
-      const temporizador = setInterval(() => {
+      const jogo = setInterval(() => {
         barreiras.animar();
         obstaculos.animar();
-        barreiras.setColidiu(colidiu(passaro, barreiras));
+        barreiras.setColidiu(colidiu(carro, barreiras));
         obstaculos.setColidiu(colidiu(passaro, obstaculos));
       }, 20);
+
+      const aceleracao = setInterval(() => {
+        if (
+          carro.getPosicaoCarro() >= pistaBotton &&
+          carro.getPosicaoCarro() <= pistaTop
+        ) {
+          if (barreiras.getVelocidade() < velocidadeMaximaDoJogo)
+            barreiras.setVelocidade(barreiras.getVelocidade() + 1);
+
+          if (carro.getVelocidadeCarro() < velocidadeMaximaDoCarro)
+            carro.setVelocidadeCarro(carro.getVelocidadeCarro() + 50);
+        } else {
+          if (barreiras.getVelocidade() > velocidadeMinimaDoJogo) {
+            if (barreiras.getVelocidade() - 2 >= velocidadeMinimaDoJogo)
+              barreiras.setVelocidade(barreiras.getVelocidade() - 2);
+            else barreiras.setVelocidade(velocidadeMinimaDoJogo);
+          }
+
+          if (carro.getVelocidadeCarro() < velocidadeMinimaDoCarro) {
+            if (carro.getVelocidadeCarro() - 70 >= velocidadeMinimaDoCarro)
+              carro.setVelocidadeCarro(carro.getVelocidadeCarro() - 70);
+            else carro.setVelocidadeCarro(velocidadeMinimaDoCarro);
+          }
+        }
+      }, 2000);
     };
   }
 }
