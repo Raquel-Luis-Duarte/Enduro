@@ -136,6 +136,46 @@ class Progresso {
   }
 }
 
+const baterias = document.getElementsByClassName("bateria");
+let energia = 0;
+
+const ColisaoDoPlayerComBaterias = () => {
+  for (const bateria of baterias) {
+    if (
+      bateria.getBoundingClientRect().left <
+        personagem.getBoundingClientRect().right &&
+      bateria.getBoundingClientRect().right >
+        personagem.getBoundingClientRect().left &&
+      bateria.getBoundingClientRect().top <
+        personagem.getBoundingClientRect().bottom &&
+      bateria.getBoundingClientRect().bottom >
+        personagem.getBoundingClientRect().top
+    ) {
+      document.getElementById("recarga").play();
+      if (document.getElementById("energia").value <= 100) {
+        document.getElementById("energia").value += 5;
+      }
+      energia++;
+      bateria.parentNode.removeChild(bateria);
+    }
+  }
+};
+
+setInterval(() => {
+  ColisaoDoPlayerComBaterias();
+}, 500);
+
+const consumoDaBarraDeEnergia = () => {
+  if (document.getElementById("energia").value <= 0) {
+    document.location.reload();
+  }
+  document.getElementById("energia").value -= 1;
+};
+
+setInterval(() => {
+  consumoDaBarraDeEnergia();
+}, 1000);
+
 function estaoSobrepostos(elementoA, elementoB) {
   const a = elementoA.getBoundingClientRect();
   const b = elementoB.getBoundingClientRect();
@@ -182,7 +222,7 @@ class FlappyBird {
       ganharPonto,
       perderPonto
     );
-
+      
     areaDoJogo.appendChild(progresso.elemento);
     areaDoJogo.appendChild(carro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));

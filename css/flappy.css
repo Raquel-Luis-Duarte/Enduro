@@ -87,4 +87,26 @@ body {
   font-family: Pixel;
   font-size: 70px;
   z-index: 100;
+  transform: rotate(90deg);
+}
+
+.bateria {
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("/img/gasolina.png");
+}
+
+/*BARRA DE ENERGIA*/
+#energia {
+  position: absolute;
+  top: 0;
+  width: 101vw;
+  /* height: 5vh; */
+  -webkit-appearance: none;
+  appearance: none;
+  transform: rotate(90deg);
 }
