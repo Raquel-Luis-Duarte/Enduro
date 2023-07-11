@@ -4,19 +4,6 @@ function novoElemento(tagName, className) {
   return elemento;
 }
 
-
-class Obstaculo {
-  constructor(reversa = false) {
-    this.elemento = novoElemento("div", "obstaculo");
-    const inimigo1 = novoElemento("div", "inimigo1");
-    const inimigo2 = novoElemento("div", "inimigo2");
-
-    this.elemento.appendChild(reversa ? inimigo1:inimigo2);
- 
-
-    this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
-  }
-}
 class Barreira {
   constructor(reversa = false) {
     this.elemento = novoElemento("div", "barreira");
@@ -29,28 +16,15 @@ class Barreira {
   }
 }
 
-class ConjObstaculos {
-  constructor(altura, abertura, posicaoNaTela) {
-    this.elemento = novoElemento("div", "obstaculosConj");
-    this.superior = new Barreira(true);
-    this.inferior = new Barreira(false);
+class Obstaculo {
+  constructor(reversa = false) {
+    this.elemento = novoElemento("div", "obstaculo");
+    const obstaculo1 = novoElemento("div", "obstaculo1");
+    const obstaculo2 = novoElemento("div", "obstaculo2");
+    this.elemento.appendChild(reversa ? obstaculo1 : obstaculo2);
+    this.elemento.appendChild(reversa ? obstaculo2 : obstaculo1);
 
-    this.elemento.appendChild(this.superior.elemento);
-    this.elemento.appendChild(this.inferior.elemento);
-
-    this.sortearAbertura = () => {
-      const alturaSuperior = Math.random() * (altura - abertura);
-      const alturaInferior = altura - abertura - alturaSuperior;
-      this.superior.setAltura(alturaSuperior);
-      this.inferior.setAltura(alturaInferior);
-    };
-    this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
-    this.setX = (popsicaoNaTela) =>
-      (this.elemento.style.left = `${popsicaoNaTela}px`);
-    this.getLargura = () => this.elemento.clientWidth;
-
-    this.sortearAbertura();
-    this.setX(posicaoNaTela);
+    this.setAltura = (altura) => (corpo.style.height = `${altura}px`);
   }
 }
 
@@ -79,13 +53,38 @@ class ParDeBarreiras {
   }
 }
 
-class Barreiras {
+class ConjDeObtaculos {
+  constructor(altura, abertura, posicaoNaTela) {
+    this.elemento = novoElemento("div", "ConjDeObtaculos");
+    this.superior = new Barreira(true);
+    this.inferior = new Barreira(false);
+
+    this.elemento.appendChild(this.superior.elemento);
+    this.elemento.appendChild(this.inferior.elemento);
+
+    this.sortearAbertura = () => {
+      const alturaSuperior = (0.5) * (altura - abertura);
+      const alturaInferior = altura - abertura - alturaSuperior;
+      this.superior.setAltura(alturaSuperior);
+      this.inferior.setAltura(alturaInferior);
+    };
+    this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
+    this.setX = (popsicaoNaTela) =>
+      (this.elemento.style.left = `${popsicaoNaTela}px`);
+    this.getLargura = () => this.elemento.clientWidth;
+
+    this.sortearAbertura();
+    this.setX(posicaoNaTela);
+  }
+}
+
+class Obstaculos {
   constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
     this.pares = [
-      new ParDeBarreiras(altura, abertura, largura),
-      new ParDeBarreiras(altura, abertura, largura + espaco),
-      new ParDeBarreiras(altura, abertura, largura + espaco * 2),
-      new ParDeBarreiras(altura, abertura, largura + espaco * 3),
+      new ConjDeObtaculos(altura, abertura, largura),
+      new ConjDeObtaculos(altura, abertura, largura + espaco),
+      new ConjDeObtaculos(altura, abertura, largura + espaco * 2),
+      new ConjDeObtaculos(altura, abertura, largura + espaco * 3),
     ];
 
     this.colidiu = false;
@@ -115,7 +114,6 @@ class Barreiras {
   getColidiu = () => this.colidiu;
   setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
 }
-
 
 class Barreiras {
   constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
@@ -208,6 +206,21 @@ function colidiu(carro, barreiras) {
   return colidiu;
 }
 
+function colidiuInimigo(carro, obstaculos) {
+  let colidiu = false;
+
+  obstaculos.pares.forEach((conjDeObtaculos) => {
+    if (!colidiu) {
+      const superior = conjDeObtaculos.superior.elemento;
+      const inferior = conjDeObtaculos.inferior.elemento;
+      colidiu =
+        estaoSobrepostos(carro.elemento, superior) ||
+        estaoSobrepostos(carro.elemento, inferior);
+    }
+  });
+  return colidiu;
+}
+
 class FlappyBird {
   constructor() {
     let pontos = 0;
@@ -221,6 +234,15 @@ class FlappyBird {
 
     const passaro = new Passaro(altura);
 
+    const obstaculos = new Obstaculos(
+      altura,
+      largura,
+      140,
+      120,
+      ganharPonto,
+      perderPonto,
+    );
+
     const barreiras = new Barreiras(
       altura,
       largura,
@@ -233,11 +255,13 @@ class FlappyBird {
     areaDoJogo.appendChild(progresso.elemento);
     areaDoJogo.appendChild(passaro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
-
+    obstaculos.pares.forEach((par) => areaDoJogo.appendChild(par.elemento))
     this.start = () => {
       const temporizador = setInterval(() => {
         barreiras.animar();
+        obstaculos.animar();
         barreiras.setColidiu(colidiu(passaro, barreiras));
+        obstaculos.setColidiu(colidiu(passaro, obstaculos));
       }, 20);
     };
   }

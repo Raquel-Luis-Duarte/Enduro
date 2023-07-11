@@ -88,3 +88,20 @@ body {
   font-size: 70px;
   z-index: 100;
 }
+
+.Obstaculo{
+  height: 30px;
+  width: 130px;
+  background: linear-gradient(90deg, red, red);
+  border: 2px solid #000;
+}
+
+
+.ConjDeObtaculos{
+
+}
+
+.Obstaculos{
+
+}
+
