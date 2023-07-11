@@ -102,9 +102,9 @@ body {
 /* BARRA DE ENERGIA */
 #energia {
   position: absolute;
-  top: 280px; 
-  left: 400px; 
-  width: 580px;
+  top: 342px; 
+  left: 330px; 
+  width: 700px;
   height: 20px;
   z-index: 100;
   -webkit-appearance: none;
