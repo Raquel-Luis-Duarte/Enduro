@@ -174,7 +174,7 @@ const consumoDaBarraDeEnergia = () => {
 
 setInterval(() => {
   consumoDaBarraDeEnergia();
-}, 1000);
+}, 500);
 
 function estaoSobrepostos(elementoA, elementoB) {
   const a = elementoA.getBoundingClientRect();
@@ -204,7 +204,7 @@ function colidiu(carro, barreiras) {
 class FlappyBird {
   constructor() {
     let pontos = 0;
-    const areaDoJogo = document.querySelector("[wm-flappy]");
+    const areaDoJogo = document.querySelector("[wm-enduro]");
     const altura = areaDoJogo.clientHeight;
     const largura = areaDoJogo.clientWidth;
 
