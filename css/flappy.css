@@ -123,10 +123,11 @@ body {
 .bateria {
   width: 9%;
   height: 90px;
-  position: fixed;
+  /* position: fixed; */
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  background-image: url("/img/carro2.png");
+  background-image: url("/img/gasolina.png");
+  transform: rotate(90deg);
 }
 
