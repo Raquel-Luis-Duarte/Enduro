@@ -211,6 +211,46 @@ class Progresso {
   }
 }
 
+const baterias = document.getElementsByClassName("bateria");
+let energia = 0;
+
+const ColisaoDoPlayerComBaterias = () => {
+  for (const bateria of baterias) {
+    if (
+      bateria.getBoundingClientRect().left <
+        personagem.getBoundingClientRect().right &&
+      bateria.getBoundingClientRect().right >
+        personagem.getBoundingClientRect().left &&
+      bateria.getBoundingClientRect().top <
+        personagem.getBoundingClientRect().bottom &&
+      bateria.getBoundingClientRect().bottom >
+        personagem.getBoundingClientRect().top
+    ) {
+      document.getElementById("recarga").play();
+      if (document.getElementById("energia").value <= 100) {
+        document.getElementById("energia").value += 5;
+      }
+      energia++;
+      bateria.parentNode.removeChild(bateria);
+    }
+  }
+};
+
+setInterval(() => {
+  ColisaoDoPlayerComBaterias();
+}, 500);
+
+const consumoDaBarraDeEnergia = () => {
+  if (document.getElementById("energia").value <= 0) {
+    document.location.reload();
+  }
+  document.getElementById("energia").value -= 1;
+};
+
+setInterval(() => {
+  consumoDaBarraDeEnergia();
+}, 500);
+
 function estaoSobrepostos(elementoA, elementoB) {
   const a = elementoA.getBoundingClientRect();
   const b = elementoB.getBoundingClientRect();
@@ -236,25 +276,10 @@ function colidiu(carro, barreiras) {
   return colidiu;
 }
 
-function colidiuInimigo(carro, obstaculos) {
-  let colidiu = false;
-
-  obstaculos.pares.forEach((conjDeObtaculos) => {
-    if (!colidiu) {
-      const superior = conjDeObtaculos.superior.elemento;
-      const inferior = conjDeObtaculos.inferior.elemento;
-      colidiu =
-        estaoSobrepostos(carro.elemento, superior) ||
-        estaoSobrepostos(carro.elemento, inferior);
-    }
-  });
-  return colidiu;
-}
-
 class FlappyBird {
   constructor() {
     let pontos = 0;
-    const areaDoJogo = document.querySelector("[wm-flappy]");
+    const areaDoJogo = document.querySelector("[wm-enduro]");
     const altura = areaDoJogo.clientHeight;
     const largura = areaDoJogo.clientWidth;
 
@@ -281,7 +306,7 @@ class FlappyBird {
       ganharPonto,
       perderPonto
     );
-
+      
     areaDoJogo.appendChild(progresso.elemento);
     areaDoJogo.appendChild(carro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
