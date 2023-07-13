@@ -116,13 +116,12 @@ body {
 
 /* BARRA DE ENERGIA */
 #energia {
-  
 
   position: absolute;
-  top: 342px; 
-  left: 330px; 
-  width: 700px;
-  height: 20px;
+  top: 355px; 
+  left: 310px; 
+  width: 790px;
+  height: 80px;
   z-index: 100;
   -webkit-appearance: none;
   appearance: none;

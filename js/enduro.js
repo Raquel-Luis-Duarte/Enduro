@@ -123,7 +123,7 @@ class Carro {
   setVelocidadeCarro = (novaVelocidade) => {
     this.velocidadeDoCarro = novaVelocidade;
   };
-}
+} 
 
 class Progresso {
   constructor() {
@@ -192,7 +192,7 @@ const consumoDaBarraDeEnergia = () => {
 
 setInterval(() => {
   consumoDaBarraDeEnergia();
-}, 500); 
+}, 300); 
 
 const numeroRandomico = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
@@ -245,7 +245,7 @@ const inserirGasolinas = async () => {
 
 inserirGasolinas();
 
-class FlappyBird {
+class Enduro {
   constructor() {
     let pontos = 0;
     const areaDoJogo = document.querySelector("[wm-enduro]");
@@ -305,4 +305,4 @@ class FlappyBird {
   }
 }
 
-new FlappyBird().start();
+new Enduro().start();
