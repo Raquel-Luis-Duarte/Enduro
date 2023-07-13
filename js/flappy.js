@@ -26,14 +26,13 @@ class ParDeBarreiras {
     this.elemento.appendChild(this.inferior.elemento);
 
     this.sortearAbertura = () => {
-      const alturaSuperior = (0.5) * (altura - abertura);
+      const alturaSuperior = 0.5 * (altura - abertura);
       const alturaInferior = altura - abertura - alturaSuperior;
       this.superior.setAltura(alturaSuperior);
       this.inferior.setAltura(alturaInferior);
     };
     this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
-    this.setX = (popsicaoNaTela) =>
-      (this.elemento.style.left = `${popsicaoNaTela}px`);
+    this.setX = (posicaoNaTela) => (this.elemento.style.left = `${posicaoNaTela}px`);
     this.getLargura = () => this.elemento.clientWidth;
 
     this.sortearAbertura();
@@ -136,133 +135,115 @@ class Progresso {
   }
 }
 
-const baterias = document.getElementsByClassName("bateria");
+const telaDeGasolina = document.getElementById("tela-de-gasolinas");
+const energiaBar = document.getElementById("energia");
 let energia = 0;
 
-const ColisaoDoPlayerComBaterias = () => {
-  for (const bateria of baterias) {
+const moverGasolina = () => {
+  const gasolinas = document.getElementsByClassName("gasolina");
+  for (const gasolina of gasolinas) {
+    const posicaoAtual = parseFloat(gasolina.style.left);
+    const novaPosicao = posicaoAtual - 0.3;
+    gasolina.style.left = `${novaPosicao}%`;
+
+    if (novaPosicao > 100) {
+      gasolina.parentNode.removeChild(gasolina);
+    }
+  }
+};
+
+setInterval(moverGasolina, 20);
+
+const ColisaoDoPlayerComGasolina = () => {
+  const carro = document.querySelector(".passaro");
+  const gasolinas = document.getElementsByClassName("gasolina");
+  for (const gasolina of gasolinas) {
     if (
-      bateria.getBoundingClientRect().left <
-        personagem.getBoundingClientRect().right &&
-      bateria.getBoundingClientRect().right >
-        personagem.getBoundingClientRect().left &&
-      bateria.getBoundingClientRect().top <
-        personagem.getBoundingClientRect().bottom &&
-      bateria.getBoundingClientRect().bottom >
-        personagem.getBoundingClientRect().top
+      gasolina.getBoundingClientRect().left <
+        carro.getBoundingClientRect().right &&
+      gasolina.getBoundingClientRect().right >
+        carro.getBoundingClientRect().left &&
+      gasolina.getBoundingClientRect().top <
+        carro.getBoundingClientRect().bottom &&
+      gasolina.getBoundingClientRect().bottom >
+        carro.getBoundingClientRect().top
     ) {
-      document.getElementById("recarga").play();
-      if (document.getElementById("energia").value <= 100) {
-        document.getElementById("energia").value += 5;
+      if (energiaBar.value <= 95) {
+        energiaBar.value += 5;
+      } else {
+        energiaBar.value = 100;
       }
       energia++;
-      bateria.parentNode.removeChild(bateria);
+      telaDeGasolina.removeChild(gasolina);
     }
   }
 };
 
 setInterval(() => {
-  ColisaoDoPlayerComBaterias();
-}, 500);
+  ColisaoDoPlayerComGasolina();
+}, 500); 
 
 const consumoDaBarraDeEnergia = () => {
-  if (document.getElementById("energia").value <= 0) {
+  if (energiaBar.value <= 0) {
     document.location.reload();
   }
-  document.getElementById("energia").value -= 1;
+  energiaBar.value -= 1;
 };
 
 setInterval(() => {
   consumoDaBarraDeEnergia();
-}, 500);
+}, 500); 
 
-function estaoSobrepostos(elementoA, elementoB) {
-  const a = elementoA.getBoundingClientRect();
-  const b = elementoB.getBoundingClientRect();
-  const horizontal = a.left + a.width >= b.left && b.left + b.width >= a.left;
-  const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top;
-
-  const retorno = horizontal && vertical;
-  return retorno;
-}
-
-function colidiu(carro, barreiras) {
-  let colidiu = false;
-
-  barreiras.pares.forEach((parDeBarreiras) => {
-    if (!colidiu) {
-      const superior = parDeBarreiras.superior.elemento;
-      const inferior = parDeBarreiras.inferior.elemento;
-      colidiu =
-        estaoSobrepostos(carro.elemento, superior) ||
-        estaoSobrepostos(carro.elemento, inferior);
-    }
-  });
-  return colidiu;
-}
-
-const telaDeBaterias = document.getElementById("tela-de-baterias");
 const numeroRandomico = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
 
 const pegarPosicao = () => {
-  var posicao = new Object();
+  const conteudoElement = document.querySelector(".conteudo");
+  const largura = conteudoElement.offsetWidth;
+  const altura = conteudoElement.offsetHeight;
 
-  posicao.left = numeroRandomico(0, 100);
-  posicao.top = numeroRandomico(0, 100);
-  posicao.right = numeroRandomico(0, 100);
-  posicao.bottom = numeroRandomico(0, 100);
+  const posicao = {};
+
+  posicao.left = 100;
+  posicao.top = numeroRandomico(29, 71);
+  posicao.right = 100 - posicao.left;
+  posicao.bottom = 100 - posicao.top;
 
   return posicao;
 };
 
-const novoItem = elemento => {
-  const item = novoElemento("div", `${elemento}`);
+const novoItem = () => {
+  const gasolina = novoElemento("div", "gasolina");
   const posicao = pegarPosicao();
-  item.style.left = `${posicao.left}%`;
-  item.style.top = `${posicao.top}%`;
-  item.style.right = `${posicao.right}%`;
-  item.style.bottom = `${posicao.bottom}%`;
-  return item;
+  gasolina.style.left = `${posicao.left}%`;
+  gasolina.style.top = `${posicao.top}%`;
+  gasolina.style.right = `${posicao.right}%`;
+  gasolina.style.bottom = `${posicao.bottom}%`;
+  return gasolina;
 };
 
-const novoConjuntoDeItens = (conjunto, elemento) => {
-  const conjuntoDeElementos = novoElemento("div", `animacao ${conjunto}`);
-  const quantidade = numeroRandomico(0, 5);
-  for (let i = 0; i < quantidade; i++) {
-    const item = novoItem(`${elemento}`);
-    conjuntoDeElementos.appendChild(item);
-  }
-  return conjuntoDeElementos;
-};
-
-const removerUltimoConjuntoDaTela = tela => {
-  setTimeout(() => {
-    tela.removeChild(tela.lastChild);
-  }, 10000);
-};
-
-const inserirNovoConjuntoNaTela = async (conjuntoAtual, tela) => {
-  const valor = tela.insertBefore(conjuntoAtual, tela.children[0]);
-  await new Promise(resolve => {
-    setTimeout(() => {
-      resolve(valor);
-    }, 9900);
-  });
-};
-
-
-const inserirBaterias = async () => {
+const inserirGasolinas = async () => {
   while (true) {
-    const conjunto = novoConjuntoDeItens("baterias", "bateria");
-    await inserirNovoConjuntoNaTela(conjunto, telaDeBaterias);
-    removerUltimoConjuntoDaTela(telaDeBaterias);
+    const gasolina = novoItem("gasolina");
+    const posicao = pegarPosicao();
+
+    if (posicao.left >= 0 && posicao.left <= 100 && posicao.top >= 20 && posicao.bottom <= 80) {
+      gasolina.style.left = `${posicao.left}%`;
+      gasolina.style.top = `${posicao.top}%`;
+      gasolina.style.right = `${posicao.right}%`;
+      gasolina.style.bottom = `${posicao.bottom}%`;
+
+      telaDeGasolina.appendChild(gasolina);
+    }
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 10000); 
+    });
   }
 };
 
-inserirBaterias();
-
+inserirGasolinas();
 
 class FlappyBird {
   constructor() {
@@ -285,7 +266,7 @@ class FlappyBird {
       ganharPonto,
       perderPonto
     );
-      
+
     areaDoJogo.appendChild(progresso.elemento);
     areaDoJogo.appendChild(carro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
@@ -323,4 +304,5 @@ class FlappyBird {
     };
   }
 }
+
 new FlappyBird().start();
