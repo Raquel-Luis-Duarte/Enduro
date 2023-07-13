@@ -32,7 +32,8 @@ class ParDeBarreiras {
       this.inferior.setAltura(alturaInferior);
     };
     this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
-    this.setX = (posicaoNaTela) => (this.elemento.style.left = `${posicaoNaTela}px`);
+    this.setX = (posicaoNaTela) =>
+      (this.elemento.style.left = `${posicaoNaTela}px`);
     this.getLargura = () => this.elemento.clientWidth;
 
     this.sortearAbertura();
@@ -135,37 +136,35 @@ class Progresso {
   }
 }
 
-const telaDeBaterias = document.getElementById("tela-de-baterias");
-const energiaBar = document.getElementById("energia");
-let energia = 0;
+const telaDeGasolina = document.getElementById("tela-de-gasolinas");
 
-const moverBaterias = () => {
-  const baterias = document.getElementsByClassName("bateria");
-  for (const bateria of baterias) {
-    const posicaoAtual = parseFloat(bateria.style.left);
+const moverGasolina = () => {
+  const gasolinas = document.getElementsByClassName("gasolina");
+  for (const gasolina of gasolinas) {
+    const posicaoAtual = parseFloat(gasolina.style.left);
     const novaPosicao = posicaoAtual - 0.3;
-    bateria.style.left = `${novaPosicao}%`;
+    gasolina.style.left = `${novaPosicao}%`;
 
     if (novaPosicao > 100) {
-      bateria.parentNode.removeChild(bateria);
+      gasolina.parentNode.removeChild(gasolina);
     }
   }
 };
 
-setInterval(moverBaterias, 20);
+setInterval(moverGasolina, 20);
 
-const ColisaoDoPlayerComBaterias = () => {
+const ColisaoDoPlayerComGasolina = () => {
   const carro = document.querySelector(".passaro");
-  const baterias = document.getElementsByClassName("bateria");
-  for (const bateria of baterias) {
+  const gasolinas = document.getElementsByClassName("gasolina");
+  for (const gasolina of gasolinas) {
     if (
-      bateria.getBoundingClientRect().left <
+      gasolina.getBoundingClientRect().left <
         carro.getBoundingClientRect().right &&
-      bateria.getBoundingClientRect().right >
+      gasolina.getBoundingClientRect().right >
         carro.getBoundingClientRect().left &&
-      bateria.getBoundingClientRect().top <
+      gasolina.getBoundingClientRect().top <
         carro.getBoundingClientRect().bottom &&
-      bateria.getBoundingClientRect().bottom >
+      gasolina.getBoundingClientRect().bottom >
         carro.getBoundingClientRect().top
     ) {
       if (energiaBar.value <= 95) {
@@ -174,14 +173,14 @@ const ColisaoDoPlayerComBaterias = () => {
         energiaBar.value = 100;
       }
       energia++;
-      telaDeBaterias.removeChild(bateria);
+      telaDeGasolina.removeChild(gasolina);
     }
   }
 };
 
 setInterval(() => {
-  ColisaoDoPlayerComBaterias();
-}, 500); 
+  ColisaoDoPlayerComGasolina();
+}, 500);
 
 const consumoDaBarraDeEnergia = () => {
   if (energiaBar.value <= 0) {
@@ -192,10 +191,12 @@ const consumoDaBarraDeEnergia = () => {
 
 setInterval(() => {
   consumoDaBarraDeEnergia();
-}, 500); 
+}, 500);
+
 
 const numeroRandomico = (min, max) => {
-  return min + Math.floor(Math.random() * (max - min));
+  const randon = Math.random();
+  return min + Math.floor(randon * (max - min));
 };
 
 const pegarPosicao = () => {
@@ -214,37 +215,126 @@ const pegarPosicao = () => {
 };
 
 const novoItem = () => {
-  const bateria = novoElemento("div", "bateria");
+  const gasolina = novoElemento("div", "gasolina");
   const posicao = pegarPosicao();
-  bateria.style.left = `${posicao.left}%`;
-  bateria.style.top = `${posicao.top}%`;
-  bateria.style.right = `${posicao.right}%`;
-  bateria.style.bottom = `${posicao.bottom}%`;
-  return bateria;
+  gasolina.style.left = `${posicao.left}%`;
+  gasolina.style.top = `${posicao.top}%`;
+  gasolina.style.right = `${posicao.right}%`;
+  gasolina.style.bottom = `${posicao.bottom}%`;
+  return gasolina;
 };
 
-const inserirBaterias = async () => {
+const inserirGasolinas = async () => {
   while (true) {
-    const bateria = novoItem("bateria");
+    const gasolina = novoItem("gasolina");
     const posicao = pegarPosicao();
 
-    // Check if the battery's initial position is within the desired range
-    if (posicao.left >= 0 && posicao.left <= 100 && posicao.top >= 20 && posicao.bottom <= 80) {
-      bateria.style.left = `${posicao.left}%`;
-      bateria.style.top = `${posicao.top}%`;
-      bateria.style.right = `${posicao.right}%`;
-      bateria.style.bottom = `${posicao.bottom}%`;
+    if (
+      posicao.left >= 0 &&
+      posicao.left <= 100 &&
+      posicao.top >= 20 &&
+      posicao.bottom <= 80
+    ) {
+      gasolina.style.left = `${posicao.left}%`;
+      gasolina.style.top = `${posicao.top}%`;
+      gasolina.style.right = `${posicao.right}%`;
+      gasolina.style.bottom = `${posicao.bottom}%`;
 
-      telaDeBaterias.appendChild(bateria);
+      telaDeGasolina.appendChild(gasolina);
     }
 
     await new Promise((resolve) => {
-      setTimeout(resolve, 10000); 
+      setTimeout(resolve, 10000);
     });
   }
 };
 
-inserirBaterias();
+inserirGasolinas();
+
+const telaDeInimigos = document.getElementById("tela-de-inimigos");
+const energiaBar = document.getElementById("energia");
+let energia = 0;
+
+const moverInimigos = () => {
+  const inimigos = document.getElementsByClassName("inimigo");
+  for (const inimigo of inimigos) {
+    const posicaoAtual = parseFloat(inimigo.style.left);
+    const novaPosicao = posicaoAtual - 0.3;
+    inimigo.style.left = `${novaPosicao}%`;
+
+    if (novaPosicao > 100) {
+      inimigo.parentNode.removeChild(inimigo);
+    }
+  }
+};
+
+setInterval(moverInimigos, 20);
+
+const ColisaoDoPlayerComInimigo = () => {
+  const carro = document.querySelector(".passaro");
+  const inimigos = document.getElementsByClassName("inimigo");
+  for (const inimigo of inimigos) {
+    if (
+      inimigo.getBoundingClientRect().left <
+        carro.getBoundingClientRect().right &&
+      inimigo.getBoundingClientRect().right >
+        carro.getBoundingClientRect().left &&
+      inimigo.getBoundingClientRect().top <
+        carro.getBoundingClientRect().bottom &&
+      inimigo.getBoundingClientRect().bottom > carro.getBoundingClientRect().top
+    ) {
+      if (energiaBar.value <= 95) {
+        energiaBar.value += 5;
+      } else {
+        energiaBar.value = 100;
+      }
+      energia++;
+      telaDeInimigo.removeChild(inimigo);
+    }
+  }
+};
+
+setInterval(() => {
+  ColisaoDoPlayerComInimigo();
+}, 500);
+
+
+const novoInimigo = () => {
+  const inimigo = novoElemento("div", "inimigo");
+  const posicao = pegarPosicao();
+  inimigo.style.left = `${posicao.left}%`;
+  inimigo.style.top = `${posicao.top}%`;
+  inimigo.style.right = `${posicao.right}%`;
+  inimigo.style.bottom = `${posicao.bottom}%`;
+  return inimigo;
+};
+
+const inserirInimigos = async () => {
+  while (true) {
+    const inimigo = novoInimigo("inimigo");
+    const posicao = pegarPosicao();
+
+    if (
+      posicao.left >= 0 &&
+      posicao.left <= 100 &&
+      posicao.top >= 20 &&
+      posicao.bottom <= 80
+    ) {
+      inimigo.style.left = `${posicao.left}%`;
+      inimigo.style.top = `${posicao.top}%`;
+      inimigo.style.right = `${posicao.right}%`;
+      inimigo.style.bottom = `${posicao.bottom}%`;
+
+      telaDeInimigo.appendChild(inimigo);
+    }
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 10000);
+    });
+  }
+};
+
+inserirInimigos();
 
 class FlappyBird {
   constructor() {
@@ -275,7 +365,7 @@ class FlappyBird {
     this.start = () => {
       const jogo = setInterval(() => {
         barreiras.animar();
-        barreiras.setColidiu(colidiu(carro, barreiras));
+        barreiras.setColidiu(barreiras.getColidiu(carro, barreiras));
       }, 20);
 
       const aceleracao = setInterval(() => {
