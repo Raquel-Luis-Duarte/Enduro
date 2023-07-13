@@ -26,20 +26,22 @@ class ParDeBarreiras {
     this.elemento.appendChild(this.inferior.elemento);
 
     this.sortearAbertura = () => {
-      const alturaSuperior = (0.5) * (altura - abertura);
+      const alturaSuperior = 0.5 * (altura - abertura);
       const alturaInferior = altura - abertura - alturaSuperior;
       this.superior.setAltura(alturaSuperior);
       this.inferior.setAltura(alturaInferior);
     };
     this.getX = () => parseInt(this.elemento.style.left.split("px")[0]);
-    this.setX = (popsicaoNaTela) =>
-      (this.elemento.style.left = `${popsicaoNaTela}px`);
+    this.setX = (posicaoNaTela) => (this.elemento.style.left = `${posicaoNaTela}px`);
     this.getLargura = () => this.elemento.clientWidth;
 
     this.sortearAbertura();
     this.setX(posicaoNaTela);
   }
 }
+
+const velocidadeMaximaDoJogo = 10;
+const velocidadeMinimaDoJogo = 0;
 
 class Barreiras {
   constructor(altura, largura, abertura, espaco, ganharPonto, perderPonto) {
@@ -52,10 +54,10 @@ class Barreiras {
 
     this.colidiu = false;
 
-    const deslocamento = 3;
+    this.velocidadeDoJogo = 3;
     this.animar = () => {
       this.pares.forEach((par) => {
-        par.setX(par.getX() - deslocamento);
+        par.setX(par.getX() - this.velocidadeDoJogo);
 
         if (par.getX() < -par.getLargura()) {
           par.setX(par.getX() + espaco * this.pares.length);
@@ -63,8 +65,8 @@ class Barreiras {
         }
         const meio = largura / 2;
         const cruzouMeio =
-          par.getX() + deslocamento >= meio && par.getX() < meio;
-          
+          par.getX() + this.velocidadeDoJogo >= meio && par.getX() < meio;
+
         if (cruzouMeio && !this.colidiu) {
           ganharPonto();
         } else if (cruzouMeio && this.colidiu) {
@@ -74,27 +76,53 @@ class Barreiras {
     };
   }
 
+  getVelocidade = () => this.velocidadeDoJogo;
+  setVelocidade = (novaVelocidade) => (this.velocidadeDoJogo = novaVelocidade);
+
   getColidiu = () => this.colidiu;
   setColidiu = (passaroColidiu) => (this.colidiu = passaroColidiu);
 }
 
-class Passaro {
+const minBotton = -37;
+const maxBotton = 690;
+
+const pistaBotton = 38;
+const pistaTop = 518;
+
+const velocidadeMaximaDoCarro = 300;
+const velocidadeMinimaDoCarro = 5;
+
+class Carro {
   constructor(alturaJogo) {
     this.elemento = novoElemento("img", "passaro");
-    this.elemento.src = "img/passaro.png";
-
-    this.getY = () => parseInt(this.elemento.style.bottom.split("px")[0]);
-    this.setY = (y) => (this.elemento.style.bottom = `${y}px`);
+    this.elemento.src = "img/carro.png";
 
     window.onkeydown = (e) => {
       if (e.keyCode == "37") {
-        this.setY(this.getY() + 15);
+        if (this.getPosicaoCarro() + 15 <= maxBotton)
+          this.setPosicaoCarro(this.getPosicaoCarro() + 15);
+        else this.setPosicaoCarro(maxBotton);
       } else if (e.keyCode == "39") {
-        this.setY(this.getY() - 15);
+        if (this.getPosicaoCarro() - 15 >= minBotton)
+          this.setPosicaoCarro(this.getPosicaoCarro() - 15);
+        else this.setPosicaoCarro(minBotton);
       }
     };
-    this.setY(alturaJogo / 2);
+
+    this.velocidadeDoCarro = 15;
+
+    this.setPosicaoCarro(alturaJogo / 2);
   }
+
+  getPosicaoCarro = () => parseInt(this.elemento.style.bottom.split("px")[0]);
+  setPosicaoCarro = (novaPosicao) => {
+    this.elemento.style.bottom = `${novaPosicao}px`;
+  };
+
+  getVelocidadeCarro = () => this.velocidadeDoCarro;
+  setVelocidadeCarro = (novaVelocidade) => {
+    this.velocidadeDoCarro = novaVelocidade;
+  };
 }
 
 class Progresso {
@@ -107,35 +135,121 @@ class Progresso {
   }
 }
 
-function estaoSobrepostos(elementoA, elementoB) {
-  const a = elementoA.getBoundingClientRect();
-  const b = elementoB.getBoundingClientRect();
-  const horizontal = a.left + a.width >= b.left && b.left + b.width >= a.left;
-  const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top;
+const telaDeBaterias = document.getElementById("tela-de-baterias");
+const energiaBar = document.getElementById("energia");
+let energia = 0;
 
-  const retorno = horizontal && vertical;
-  return retorno;
-}
+const moverBaterias = () => {
+  const baterias = document.getElementsByClassName("bateria");
+  for (const bateria of baterias) {
+    const posicaoAtual = parseFloat(bateria.style.left);
+    const novaPosicao = posicaoAtual - 0.3;
+    bateria.style.left = `${novaPosicao}%`;
 
-function colidiu(carro, barreiras) {
-  let colidiu = false;
-
-  barreiras.pares.forEach((parDeBarreiras) => {
-    if (!colidiu) {
-      const superior = parDeBarreiras.superior.elemento;
-      const inferior = parDeBarreiras.inferior.elemento;
-      colidiu =
-        estaoSobrepostos(carro.elemento, superior) ||
-        estaoSobrepostos(carro.elemento, inferior);
+    if (novaPosicao > 100) {
+      bateria.parentNode.removeChild(bateria);
     }
-  });
-  return colidiu;
-}
+  }
+};
+
+setInterval(moverBaterias, 20);
+
+const ColisaoDoPlayerComBaterias = () => {
+  const carro = document.querySelector(".passaro");
+  const baterias = document.getElementsByClassName("bateria");
+  for (const bateria of baterias) {
+    if (
+      bateria.getBoundingClientRect().left <
+        carro.getBoundingClientRect().right &&
+      bateria.getBoundingClientRect().right >
+        carro.getBoundingClientRect().left &&
+      bateria.getBoundingClientRect().top <
+        carro.getBoundingClientRect().bottom &&
+      bateria.getBoundingClientRect().bottom >
+        carro.getBoundingClientRect().top
+    ) {
+      if (energiaBar.value <= 95) {
+        energiaBar.value += 5;
+      } else {
+        energiaBar.value = 100;
+      }
+      energia++;
+      telaDeBaterias.removeChild(bateria);
+    }
+  }
+};
+
+setInterval(() => {
+  ColisaoDoPlayerComBaterias();
+}, 500); 
+
+const consumoDaBarraDeEnergia = () => {
+  if (energiaBar.value <= 0) {
+    document.location.reload();
+  }
+  energiaBar.value -= 1;
+};
+
+setInterval(() => {
+  consumoDaBarraDeEnergia();
+}, 500); 
+
+const numeroRandomico = (min, max) => {
+  return min + Math.floor(Math.random() * (max - min));
+};
+
+const pegarPosicao = () => {
+  const conteudoElement = document.querySelector(".conteudo");
+  const largura = conteudoElement.offsetWidth;
+  const altura = conteudoElement.offsetHeight;
+
+  const posicao = {};
+
+  posicao.left = 100;
+  posicao.top = numeroRandomico(29, 71);
+  posicao.right = 100 - posicao.left;
+  posicao.bottom = 100 - posicao.top;
+
+  return posicao;
+};
+
+const novoItem = () => {
+  const bateria = novoElemento("div", "bateria");
+  const posicao = pegarPosicao();
+  bateria.style.left = `${posicao.left}%`;
+  bateria.style.top = `${posicao.top}%`;
+  bateria.style.right = `${posicao.right}%`;
+  bateria.style.bottom = `${posicao.bottom}%`;
+  return bateria;
+};
+
+const inserirBaterias = async () => {
+  while (true) {
+    const bateria = novoItem("bateria");
+    const posicao = pegarPosicao();
+
+    // Check if the battery's initial position is within the desired range
+    if (posicao.left >= 0 && posicao.left <= 100 && posicao.top >= 20 && posicao.bottom <= 80) {
+      bateria.style.left = `${posicao.left}%`;
+      bateria.style.top = `${posicao.top}%`;
+      bateria.style.right = `${posicao.right}%`;
+      bateria.style.bottom = `${posicao.bottom}%`;
+
+      telaDeBaterias.appendChild(bateria);
+    }
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 10000); 
+    });
+  }
+};
+
+inserirBaterias();
 
 class FlappyBird {
   constructor() {
     let pontos = 0;
-    const areaDoJogo = document.querySelector("[wm-flappy]");
+    const areaDoJogo = document.querySelector("[wm-enduro]");
     const altura = areaDoJogo.clientHeight;
     const largura = areaDoJogo.clientWidth;
 
@@ -143,27 +257,53 @@ class FlappyBird {
     const ganharPonto = () => progresso.atualizarPontos(++pontos);
     const perderPonto = () => progresso.atualizarPontos(--pontos);
 
-    const passaro = new Passaro(altura);
+    const carro = new Carro(altura);
 
     const barreiras = new Barreiras(
       altura,
       largura,
+      405,
       200,
-      400,
       ganharPonto,
       perderPonto
     );
 
     areaDoJogo.appendChild(progresso.elemento);
-    areaDoJogo.appendChild(passaro.elemento);
+    areaDoJogo.appendChild(carro.elemento);
     barreiras.pares.forEach((par) => areaDoJogo.appendChild(par.elemento));
 
     this.start = () => {
-      const temporizador = setInterval(() => {
+      const jogo = setInterval(() => {
         barreiras.animar();
-        barreiras.setColidiu(colidiu(passaro, barreiras));
+        barreiras.setColidiu(colidiu(carro, barreiras));
       }, 20);
+
+      const aceleracao = setInterval(() => {
+        if (
+          carro.getPosicaoCarro() >= pistaBotton &&
+          carro.getPosicaoCarro() <= pistaTop
+        ) {
+          if (barreiras.getVelocidade() < velocidadeMaximaDoJogo)
+            barreiras.setVelocidade(barreiras.getVelocidade() + 1);
+
+          if (carro.getVelocidadeCarro() < velocidadeMaximaDoCarro)
+            carro.setVelocidadeCarro(carro.getVelocidadeCarro() + 50);
+        } else {
+          if (barreiras.getVelocidade() > velocidadeMinimaDoJogo) {
+            if (barreiras.getVelocidade() - 2 >= velocidadeMinimaDoJogo)
+              barreiras.setVelocidade(barreiras.getVelocidade() - 2);
+            else barreiras.setVelocidade(velocidadeMinimaDoJogo);
+          }
+
+          if (carro.getVelocidadeCarro() < velocidadeMinimaDoCarro) {
+            if (carro.getVelocidadeCarro() - 70 >= velocidadeMinimaDoCarro)
+              carro.setVelocidadeCarro(carro.getVelocidadeCarro() - 70);
+            else carro.setVelocidadeCarro(velocidadeMinimaDoCarro);
+          }
+        }
+      }, 2000);
     };
   }
 }
+
 new FlappyBird().start();

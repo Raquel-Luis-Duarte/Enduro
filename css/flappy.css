@@ -23,18 +23,22 @@ body {
 
 .conteudo {
   display: flex;
+  position: relative;
   flex-direction: column;
   align-items: center;
   min-height: 100%;
+  background-image: url("../img/pista.jpg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
 }
 
-[wm-flappy] {
+[wm-enduro] {
   position: relative;
-  border: 5px solid dodgerblue;
+  border: 5px solid darkgray;
   width: 700px;
   height: 1200px;
   margin: 15px;
-  background-color: deepskyblue;
   overflow: hidden;
   transform: rotate(270deg);
 }
@@ -43,6 +47,7 @@ body {
   position: absolute;
   width: 60px;
   left: calc(50% - 30px);
+  transform: rotate(90deg);
 }
 
 .par-de-barreiras {
@@ -63,14 +68,14 @@ body {
 .barreira .borda {
   height: 30px;
   width: 130px;
-  background: linear-gradient(90deg, #639301, #a5e82e);
+  background: linear-gradient(90deg, #b1b8aa, #e7e7e1);
   border: 2px solid #000;
 }
 
 .barreira .corpo {
   height: 40px;
   width: 110px;
-  background: linear-gradient(90deg, #639301, #a5e82e);
+  background: linear-gradient(90deg, #161615, #0d0e0d);
   border-left: 2px solid #000;
   border-right: 2px solid #000;
 }
@@ -82,4 +87,63 @@ body {
   font-family: Pixel;
   font-size: 70px;
   z-index: 100;
+  transform: rotate(90deg);
+}
+
+.bateria {
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("/img/gasolina.png");
+}
+
+/* BARRA DE ENERGIA */
+#energia {
+  position: absolute;
+  top: 342px;
+  left: 330px;
+  width: 700px;
+  height: 20px;
+  z-index: 100;
+  -webkit-appearance: none;
+  appearance: none;
+  transform: rotate(90deg);
+}
+
+/* BATERIAS DO CENÁRIO */
+#tela-de-baterias,
+.baterias {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+.bateria {
+  width: 9%;
+  height: 90px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("/img/gasolina.png");
+  transform: rotate(90deg);
+  animation-name: batteryScroll;
+}
+
+.bateria.animacao-bateria {
+  
+  /*animation-duration: 5s; Adjust the duration of the animation here (5s is just an example) */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes batteryScroll {
+  from {
+    left: 0%;
+  }
+  to {
+    left: 100%;
+  }
 }
