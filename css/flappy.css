@@ -116,9 +116,11 @@ body {
 
 /* BARRA DE ENERGIA */
 #energia {
+  
+
   position: absolute;
-  top: 342px;
-  left: 330px;
+  top: 342px; 
+  left: 330px; 
   width: 700px;
   height: 20px;
   z-index: 100;
@@ -147,14 +149,6 @@ body {
   transform: rotate(90deg);
   animation-name: batteryScroll;
 }
-
-
-/* .gasolina.animacao-gasolina {
- 
-  /*animation-duration: 5s; Adjust the duration of the animation here (5s is just an example) */
-  /*animation-timing-function: linear;
-  animation-iteration-count: infinite;
-} */
 
 
 @keyframes batteryScroll {
